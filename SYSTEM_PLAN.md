@@ -1,880 +1,627 @@
-# AI-Assisted Development Knowledge Management System - Design Plan
+# AI Knowledge Management System - Simplified Foundation Plan
 
-## Executive Summary
+## Overview
 
-This system provides a structured, AI-agnostic knowledge base that captures development context, patterns, and decisions. It enables AI assistants to quickly find relevant information without searching the entire repository, while building institutional knowledge over time.
+A simple, incremental system that helps AI assistants (Claude Code, Gemini, etc.) know **where to look first** instead of searching the entire repository. The system grows with your project through automatic knowledge capture.
 
----
-
-## Core Design Principles
-
-1. **Discovery Over Search**: AI knows where to look first, reducing latency and token usage
-2. **Incremental Knowledge Capture**: Every feature/fix adds to the knowledge base
-3. **Tool Agnostic**: Works with Claude Code, Gemini, Cursor, and other AI coding tools
-4. **Human Readable**: All metadata in markdown/YAML for easy browsing and editing
-5. **Structured Navigation**: Hierarchical index → specific knowledge → code references
-6. **Low Overhead**: Simple commands to capture knowledge, no complex setup per task
+**Core Idea**: `claude.md` tells AI → read `.ai/INDEX.md` → which points to specific knowledge files
 
 ---
 
-## Directory Structure
+## Design Principles
+
+1. **claude.md is the entry point** - AI always reads this first
+2. **Discovery over search** - AI knows where to look for specific information
+3. **Incremental growth** - Start simple, build as you go
+4. **Tool agnostic** - Works with any AI coding assistant
+5. **Low overhead** - Simple commands, automatic capture
+
+---
+
+## Foundation Structure (Phase 1 - Start Here)
 
 ```
 agentic-workflows/
-├── .ai/                          # Tool-agnostic AI knowledge base (main system)
-│   ├── INDEX.md                  # Master index - AI starts here
-│   ├── NAVIGATION.md             # "Where to look" guide for common questions
-│   ├── context/                  # Project context and architecture
-│   │   ├── architecture.md       # System architecture overview
-│   │   ├── decisions/            # Architecture Decision Records (ADRs)
-│   │   │   ├── 001-choice-of-framework.md
-│   │   │   └── 002-database-selection.md
-│   │   ├── domain-model.md       # Core domain concepts
-│   │   └── tech-stack.md         # Technology choices and rationale
-│   ├── knowledge/                # Captured feature/component knowledge
-│   │   ├── features/             # Feature-specific knowledge
-│   │   │   ├── authentication.md
-│   │   │   └── user-management.md
-│   │   ├── components/           # Component documentation
-│   │   │   ├── api-gateway.md
-│   │   │   └── database-layer.md
-│   │   └── patterns/             # Coding patterns used in this project
-│   │       ├── error-handling.md
-│   │       └── dependency-injection.md
-│   ├── workflows/                # Repeatable task workflows
-│   │   ├── add-feature.md        # Steps for adding a new feature
-│   │   ├── fix-bug.md            # Bug fix workflow
-│   │   ├── refactor.md           # Refactoring workflow
-│   │   ├── add-test.md           # Testing workflow
-│   │   └── release.md            # Release process
-│   ├── archetypes/               # Project structure templates
-│   │   ├── rest-api/             # REST API service template
-│   │   │   ├── template.md       # Structure description
-│   │   │   └── example/          # Example implementation
-│   │   ├── cli-tool/             # CLI application template
-│   │   └── library/              # Library/package template
-│   ├── agents/                   # Specialized AI agent configurations
-│   │   ├── code-reviewer.md      # Code review focus areas
-│   │   ├── test-writer.md        # Test generation guidelines
-│   │   ├── docs-writer.md        # Documentation standards
-│   │   └── security-auditor.md   # Security review checklist
-│   ├── personas/                 # AI working modes
-│   │   ├── senior-engineer.md    # Senior dev perspective
-│   │   ├── architect.md          # Architecture focus
-│   │   └── mentor.md             # Teaching/explaining mode
-│   ├── skills/                   # Reusable AI capabilities
-│   │   ├── generate-tests.md     # Test generation templates
-│   │   ├── update-changelog.md   # Changelog update rules
-│   │   ├── create-migration.md   # Database migration patterns
-│   │   └── api-documentation.md  # API doc generation
-│   └── sessions/                 # Session history (optional, git-ignored)
-│       └── 2025-11-08-feature-x.md
+├── claude.md                    # AI entry point - READ THIS FIRST
+├── .gitignore                   # Ignore temp files
+├── README.md                    # Human-readable project overview
 │
-├── .claude/                      # Claude Code specific configurations
-│   ├── commands/                 # Slash commands
-│   │   ├── capture.md            # /capture - Knowledge capture workflow
-│   │   ├── workflow.md           # /workflow <name> - Execute workflow
-│   │   ├── agent.md              # /agent <type> - Activate agent persona
-│   │   └── ask.md                # /ask <topic> - Query knowledge base
-│   └── hooks/                    # Claude Code hooks
-│       └── session-start.sh      # Load project context on start
+├── .ai/                         # AI knowledge base
+│   ├── INDEX.md                 # Master index - AI's second stop
+│   ├── GUIDE.md                 # "Where to look" for common questions
+│   │
+│   ├── context/                 # Project architecture & decisions
+│   │   ├── overview.md          # What this project does
+│   │   ├── architecture.md      # How it's structured
+│   │   └── decisions/           # Important decisions (ADRs)
+│   │       └── 001-example.md
+│   │
+│   └── knowledge/               # Captured knowledge (grows over time)
+│       ├── features/            # Feature documentation
+│       ├── components/          # Component documentation
+│       └── patterns/            # Coding patterns used
 │
-├── docs/                         # Human-readable documentation
-│   ├── README.md                 # Project overview
-│   ├── getting-started.md        # Setup guide
-│   ├── architecture/             # Architecture docs (mirrors .ai/context)
-│   └── api/                      # API documentation
-│
-├── claude.md                     # Claude Code project configuration
-├── .gitignore                    # Ignore sessions, temp files
-└── README.md                     # Project entry point
+└── .claude/                     # Claude Code specific
+    └── commands/                # Slash commands
+        └── capture.md           # /capture - Knowledge capture
 ```
+
+**That's it to start.** We'll add workflows, agents, skills later as needed.
 
 ---
 
-## System Components
+## Core Files Explained
 
-### 1. **INDEX.md** - AI Starting Point
+### 1. `claude.md` - The Entry Point
 
-The master index that AI reads first. Contains:
-- Quick links to most frequently accessed knowledge
-- "Last updated" sections for recent changes
-- Current project phase/focus
-- Quick stats (features count, components, etc.)
+**Purpose**: First file any AI reads. Tells them how to navigate this project.
 
 ```markdown
-# AI Knowledge Base Index
+# Agentic Workflows - AI Knowledge Management System
 
-**Last Updated**: 2025-11-08
-**Project Phase**: Development
-**Active Features**: 3
+**Project Type**: AI Knowledge Management System
+**Status**: In Development
+**Tech Stack**: [To be determined based on usage]
 
-## Start Here
+---
 
-### For New Sessions
-1. Read [NAVIGATION.md](.ai/NAVIGATION.md) - Learn where to find what
-2. Read [architecture.md](.ai/context/architecture.md) - System overview
-3. Check [Recent Changes](#recent-changes)
+## For AI Assistants (Claude, Gemini, etc.)
 
-### Quick Links
-- [Features](.ai/knowledge/features/) - 3 documented features
-- [Components](.ai/knowledge/components/) - 5 core components
-- [Workflows](.ai/workflows/) - 5 standard workflows
-- [Patterns](.ai/knowledge/patterns/) - 8 coding patterns
+### Read This First! 🎯
 
-## Recent Changes
-- **2025-11-08**: Added user authentication feature → [authentication.md](.ai/knowledge/features/authentication.md)
-- **2025-11-07**: Refactored database layer → [database-layer.md](.ai/knowledge/components/database-layer.md)
+**Every time you start working on this project:**
 
-## Project Overview
-[2-3 sentence description of what this project does]
+1. **Read** `.ai/INDEX.md` - Shows recent changes and knowledge map
+2. **Check** `.ai/GUIDE.md` - Learn where to find specific information
+3. **Review** recent changes in INDEX.md before asking questions
+
+### Knowledge Base Structure
+
+```
+.ai/
+├── INDEX.md          - Start here: recent changes, knowledge map
+├── GUIDE.md          - Where to look for common questions
+├── context/          - Project architecture and key decisions
+└── knowledge/        - Features, components, patterns
+    ├── features/     - What features exist and how they work
+    ├── components/   - System components documentation
+    └── patterns/     - Coding patterns used in this project
 ```
 
-### 2. **NAVIGATION.md** - "Where to Look" Guide
+### How to Work Here
 
-Teaches AI where to find specific types of information:
+**Before making changes:**
+1. Check `.ai/INDEX.md` for recent updates
+2. Look for related features in `.ai/knowledge/features/`
+3. Review relevant patterns in `.ai/knowledge/patterns/`
+
+**After making changes:**
+1. Run `/capture` to document what you built
+2. Ensure tests pass
+3. Commit with clear messages
+
+### Available Commands
+
+- `/capture` - Capture knowledge after building something
+
+### Project Overview
+
+This project is a meta-system for managing AI knowledge in software projects.
+It helps AI assistants know where to look instead of searching everything.
+
+See `.ai/context/overview.md` for full details.
+
+---
+
+## For Humans
+
+See `README.md` for project documentation and getting started guide.
+```
+
+### 2. `.ai/INDEX.md` - AI's Dashboard
+
+**Purpose**: Quick overview of what's in the knowledge base and what changed recently.
+
+```markdown
+# AI Knowledge Base - Index
+
+**Last Updated**: 2025-11-08
+**Project Status**: Foundation Phase
+**Knowledge Items**: 0 features, 0 components, 0 patterns
+
+---
+
+## 🆕 Recent Changes
+
+### 2025-11-08
+- 🎉 **Initialized** knowledge base system
+- 📝 **Created** foundation structure (claude.md, INDEX.md, GUIDE.md)
+
+---
+
+## 📍 Quick Navigation
+
+New here? → Read [GUIDE.md](./GUIDE.md) to learn where to find things
+
+### Project Context
+- [Overview](./context/overview.md) - What this project does
+- [Architecture](./context/architecture.md) - How it's structured
+- [Decisions](./context/decisions/) - Important choices made
+
+### Knowledge (Built over time)
+- [Features](./knowledge/features/) - 0 documented
+- [Components](./knowledge/components/) - 0 documented
+- [Patterns](./knowledge/patterns/) - 0 documented
+
+---
+
+## 📊 Project Stats
+
+- **Files in repo**: [Auto-update when knowledge is captured]
+- **Test coverage**: [To be added]
+- **Last commit**: [Auto-update]
+
+---
+
+## 🎯 Current Focus
+
+- Setting up foundation knowledge management system
+- Defining initial project structure
+- Creating first features
+
+---
+
+## 💡 How This Works
+
+1. When you build something, run `/capture`
+2. AI analyzes what changed and creates documentation
+3. INDEX.md updates automatically
+4. Knowledge grows incrementally with each feature
+
+This file is your dashboard - check here first every session.
+```
+
+### 3. `.ai/GUIDE.md` - Where to Look
+
+**Purpose**: Teaches AI where to find specific types of information.
 
 ```markdown
 # Navigation Guide - Where to Look
 
-## Common Questions → Where to Find Answers
+This guide helps you find information quickly without searching the entire repo.
+
+---
+
+## Common Questions → Where to Look
+
+### "What does this project do?"
+→ Read `.ai/context/overview.md`
+
+### "How is it architected?"
+→ Read `.ai/context/architecture.md`
+
+### "Why was [decision] made?"
+→ Check `.ai/context/decisions/` for Architecture Decision Records (ADRs)
 
 ### "How does [feature] work?"
-1. Check `.ai/knowledge/features/[feature].md`
-2. Look for related components in `.ai/knowledge/components/`
-3. Review code at file paths referenced in feature doc
+→ Check `.ai/knowledge/features/[feature-name].md`
+→ If not found, search codebase (knowledge not captured yet)
 
-### "What's the architecture?"
-1. Read `.ai/context/architecture.md`
-2. Review `.ai/context/domain-model.md`
-3. Check relevant `.ai/context/decisions/*.md`
+### "What components exist?"
+→ Browse `.ai/knowledge/components/`
 
-### "How do I add a feature?"
-1. Follow `.ai/workflows/add-feature.md`
-2. Use relevant archetype from `.ai/archetypes/`
-3. Reference similar features in `.ai/knowledge/features/`
-
-### "What patterns are used here?"
-1. Browse `.ai/knowledge/patterns/`
-2. Check `.ai/context/architecture.md` for pattern overview
+### "What coding patterns are used?"
+→ Browse `.ai/knowledge/patterns/`
 
 ### "What changed recently?"
-1. Check `.ai/INDEX.md` → Recent Changes section
-2. Review recent commits
-3. Check `.ai/sessions/` for recent session notes
+→ Check `.ai/INDEX.md` → Recent Changes section
+
+### "How do I [add a feature / fix a bug / etc.]?"
+→ Check if documented in `.ai/knowledge/`
+→ If first time, build it and run `/capture` to document the process
+
+---
+
+## When Knowledge Doesn't Exist Yet
+
+This knowledge base **grows over time**. If you can't find something:
+
+1. Build the feature or fix the bug
+2. Run `/capture` to document it
+3. Next time, the knowledge will be here
+
+Start simple, build incrementally.
+
+---
+
+## File Naming Conventions
+
+- **Features**: `.ai/knowledge/features/feature-name.md` (kebab-case)
+- **Components**: `.ai/knowledge/components/component-name.md` (kebab-case)
+- **Patterns**: `.ai/knowledge/patterns/pattern-name.md` (kebab-case)
+- **Decisions**: `.ai/context/decisions/NNN-short-title.md` (numbered ADRs)
+
+---
+
+## Quick Decision Tree
+
+```
+Need information?
+│
+├─ About project purpose/architecture?
+│  └─ Read .ai/context/
+│
+├─ About a feature?
+│  └─ Check .ai/knowledge/features/
+│
+├─ About how to do something?
+│  └─ Check .ai/knowledge/patterns/
+│
+└─ Recent changes?
+   └─ Check .ai/INDEX.md
+```
 ```
 
-### 3. **Knowledge Capture Metadata Schema**
+### 4. Knowledge File Template
 
-Every feature/component knowledge file uses YAML frontmatter:
+**Purpose**: Standard format for capturing feature/component knowledge.
 
 ```markdown
 ---
-type: feature | component | pattern | decision
+type: feature | component | pattern
 name: User Authentication
-status: implemented | in-progress | planned | deprecated
+status: implemented | in-progress | planned
 created: 2025-11-08
 updated: 2025-11-08
-owner: djmorgan26
-related:
-  - .ai/knowledge/components/database-layer.md
-  - .ai/knowledge/features/user-management.md
-tags: [auth, security, jwt]
 files:
-  - src/auth/authenticator.ts
+  - src/auth/login.ts
   - src/middleware/auth.ts
-  - tests/auth.test.ts
-dependencies:
-  - jsonwebtoken
-  - bcrypt
-decisions:
-  - .ai/context/decisions/003-jwt-vs-sessions.md
+related:
+  - .ai/knowledge/components/database.md
+tags: [auth, security, jwt]
 ---
 
-# User Authentication
+# [Feature/Component Name]
 
-## Overview
-[What this feature does - 2-3 sentences]
+## What It Does
+[2-3 sentence description]
 
 ## How It Works
-[Architecture/flow explanation with code references]
+[Architecture explanation with file references]
 
-## Key Components
-- **Authenticator** (src/auth/authenticator.ts:15) - Main auth logic
-- **Auth Middleware** (src/middleware/auth.ts:8) - Request validation
+**Key files:**
+- `src/auth/login.ts:15` - Main authentication logic
+- `src/middleware/auth.ts:8` - Request validation
 
 ## Important Decisions
-- **Why JWT?**: [Link to ADR or inline explanation]
-- **Token expiration**: 24 hours (configurable in .env)
+- **Why JWT?**: Stateless auth for scalability
+- **Token expiration**: 24 hours (configurable)
 
-## Usage Examples
-[Code examples showing how to use this feature]
-
-## Testing
-- Unit tests: tests/auth.test.ts
-- Integration tests: tests/integration/auth.integration.test.ts
-- Coverage: 95%
-
-## Common Issues & Solutions
-- **Issue**: Token expiration not working
-  - **Solution**: Check system clock, verify JWT_SECRET is set
-
-## Future Enhancements
-- [ ] Add refresh tokens
-- [ ] Support OAuth providers
-- [ ] Implement 2FA
+## Usage Example
+```typescript
+// Example code showing how to use this
 ```
 
-### 4. **Workflow System**
+## Testing
+- Tests: `tests/auth.test.ts`
+- Coverage: 95%
 
-Each workflow file is a step-by-step guide for AI to follow:
+## Common Issues
+- **Issue**: Token expiration not working
+  - **Fix**: Check JWT_SECRET environment variable
+
+## Future Ideas
+- [ ] Add refresh tokens
+- [ ] Support OAuth
+```
+
+---
+
+## The `/capture` Command (Phase 1 - Simple Version)
+
+**Purpose**: After building something, automatically document it.
+
+### `.claude/commands/capture.md`
 
 ```markdown
----
-workflow: add-feature
-description: Standard process for adding a new feature
-version: 1.0
----
-
-# Add Feature Workflow
-
-## Pre-Execution Checklist
-- [ ] Feature is defined and understood
-- [ ] Architecture implications considered
-- [ ] Similar features reviewed for patterns
+You are running the /capture command to document recent work.
 
 ## Steps
 
-### 1. Plan & Design (5 min)
-**Actions:**
-- Review similar features in `.ai/knowledge/features/`
-- Check relevant patterns in `.ai/knowledge/patterns/`
-- Identify affected components in `.ai/knowledge/components/`
-- Create feature plan (what files will change, new dependencies, etc.)
+1. **Analyze changes**
+   - Run `git diff HEAD` or `git log -1 --stat` to see what changed
+   - Identify files modified/added
 
-**Output:** Design document or inline plan
+2. **Understand what was built**
+   - Read the changed files
+   - Check commit messages for context
+   - Identify if it's a feature, component, or pattern
 
-### 2. Implement (varies)
-**Actions:**
-- Follow project patterns (see `.ai/knowledge/patterns/`)
-- Write code with clear comments
-- Use appropriate archetype from `.ai/archetypes/` if creating new structure
+3. **Create or update knowledge file**
+   - If new feature → create `.ai/knowledge/features/[name].md`
+   - If new component → create `.ai/knowledge/components/[name].md`
+   - If new pattern → create `.ai/knowledge/patterns/[name].md`
+   - Use the standard template with YAML frontmatter
 
-**Output:** Working implementation
-
-### 3. Test (10-15 min)
-**Actions:**
-- Use `.ai/skills/generate-tests.md` for test templates
-- Write unit tests
-- Write integration tests if needed
-- Ensure coverage > 80%
-
-**Output:** Passing tests with good coverage
-
-### 4. Document (5-10 min)
-**Actions:**
-- Update/create feature doc in `.ai/knowledge/features/[feature-name].md`
-- Update affected component docs
-- Update `.ai/INDEX.md` with recent change
-- Add ADR in `.ai/context/decisions/` if significant decision was made
-
-**Output:** Updated knowledge base
-
-### 5. Capture Knowledge (AUTO via /capture)
-**Actions:**
-- Run `/capture` command
-- AI analyzes git diff, commit history
-- AI generates/updates knowledge files
-- AI updates INDEX.md
-
-**Output:** Systematic knowledge capture
-
-## Post-Execution Checklist
-- [ ] All tests pass
-- [ ] Knowledge base updated
-- [ ] INDEX.md has recent change entry
-- [ ] Code committed with clear message
-```
-
-### 5. **Agent Configurations**
-
-Specialized AI behaviors for different tasks:
-
-```markdown
----
-agent: code-reviewer
-focus: Code quality, best practices, security
-activation: /agent code-reviewer
----
-
-# Code Reviewer Agent
-
-## Role
-You are a senior code reviewer focused on code quality, maintainability, and security.
-
-## Review Checklist
-
-### Code Quality
-- [ ] Follows project patterns (see `.ai/knowledge/patterns/`)
-- [ ] Clear variable/function names
-- [ ] Appropriate comments for complex logic
-- [ ] No code duplication
-- [ ] Functions are focused and single-purpose
-
-### Security
-- [ ] No hardcoded secrets
-- [ ] Input validation present
-- [ ] SQL injection prevention
-- [ ] XSS prevention
-- [ ] Authentication/authorization checked
-
-### Testing
-- [ ] Unit tests present
-- [ ] Edge cases covered
-- [ ] Error handling tested
-- [ ] Coverage > 80%
-
-### Documentation
-- [ ] Public APIs documented
-- [ ] Complex algorithms explained
-- [ ] Knowledge base updated
-
-## Knowledge to Reference
-- Project patterns: `.ai/knowledge/patterns/`
-- Security guidelines: `.ai/agents/security-auditor.md`
-- Testing standards: `.ai/skills/generate-tests.md`
-```
-
----
-
-## Knowledge Capture System - The Key Innovation
-
-### The `/capture` Command
-
-This is the **core innovation** - a post-feature workflow that systematically captures knowledge.
-
-**User runs:** `/capture` or `/capture --feature "user authentication"`
-
-**AI executes:**
-
-1. **Analyze Changes**
-   - Run `git diff` to see what changed
-   - Identify modified/new files
-   - Extract key functions/classes changed
-
-2. **Extract Context**
-   - Read commit messages for "why"
-   - Identify patterns used
-   - Note decisions made
-
-3. **Generate Knowledge**
-   - Create/update feature doc in `.ai/knowledge/features/`
-   - Update affected component docs in `.ai/knowledge/components/`
-   - Create ADR if significant architectural decision
-   - Update related pattern docs
-
-4. **Update Index**
-   - Add entry to `.ai/INDEX.md` Recent Changes
-   - Update statistics (feature count, etc.)
-   - Add cross-references
+4. **Update INDEX.md**
+   - Add entry to "Recent Changes" section with date
+   - Update knowledge counts
+   - Add links to new knowledge files
 
 5. **Validate**
-   - Check all files referenced exist
-   - Ensure proper frontmatter
-   - Verify links are valid
+   - Ensure all file references in knowledge docs exist
+   - Check that frontmatter is valid YAML
+   - Verify links work
 
-### Knowledge Capture Metadata Template
+## Output
 
-When `/capture` runs, it creates/updates files like:
+Tell the user:
+- What knowledge was captured
+- Where it was saved
+- Link to the file(s) created/updated
+
+## Example
+
+User runs: `/capture`
+
+You respond:
+"✅ Captured knowledge:
+- Created `.ai/knowledge/features/user-login.md`
+- Updated `.ai/INDEX.md` with recent changes
+- Documented 3 key files and 2 design decisions"
+```
+
+---
+
+## Initial Context Files
+
+### `.ai/context/overview.md`
 
 ```markdown
----
-type: feature
-name: [Extracted from context]
-status: implemented
-created: [Current date]
-updated: [Current date]
-owner: [Git user]
-related: [Auto-detected from imports/references]
-tags: [Auto-extracted from code/commits]
-files: [All files changed in git diff]
-dependencies: [Detected from package.json/imports]
-decisions: [Links to any ADRs created]
-session_id: [If session tracking enabled]
-commit: [Git commit SHA]
----
+# Project Overview
 
-# [Feature Name]
+## What This Is
 
-## Overview
-[AI-generated summary from commits and code]
+This is an AI knowledge management system for software projects. It helps AI assistants (Claude Code, Gemini, etc.) navigate codebases efficiently by maintaining structured knowledge about features, components, and patterns.
 
-## What Changed
-[List of changes with file references]
+## The Problem It Solves
+
+AI assistants often:
+- Search entire repositories for context (slow, token-heavy)
+- Ask repetitive clarifying questions
+- Lack project-specific knowledge
+- Don't learn from previous sessions
+
+## The Solution
+
+A structured knowledge base that:
+- Tells AI where to look first (no full-repo searches)
+- Captures decisions and patterns as you build
+- Grows incrementally with each feature
+- Works with any AI coding assistant
 
 ## How It Works
-[AI-generated explanation with code references]
 
-## Key Decisions
-[Extracted from commit messages or inline comments]
+1. AI reads `claude.md` → knows to check `.ai/INDEX.md`
+2. INDEX.md shows recent changes and knowledge map
+3. AI follows links to specific knowledge files
+4. After building something, `/capture` documents it automatically
+5. Knowledge base grows, AI gets smarter about the project
 
-## Testing
-[Links to test files created]
+## Status
 
-## Related Knowledge
-[Auto-linked related features/components]
+Currently in **foundation phase** - setting up core structure.
+```
+
+### `.ai/context/architecture.md`
+
+```markdown
+# Architecture
+
+## System Structure
+
+This is a file-based knowledge management system with three layers:
+
+### Layer 1: Entry Point
+- **claude.md** - AI reads this first, gets oriented
+
+### Layer 2: Navigation
+- **.ai/INDEX.md** - Quick overview, recent changes, knowledge map
+- **.ai/GUIDE.md** - Where to look for specific information
+
+### Layer 3: Knowledge
+- **.ai/context/** - Project purpose, architecture, decisions
+- **.ai/knowledge/** - Features, components, patterns (grows over time)
+
+### Layer 4: Automation
+- **.claude/commands/** - Slash commands like `/capture`
+
+## Design Decisions
+
+- **Markdown + YAML**: Human-readable, git-friendly, tool-agnostic
+- **Incremental growth**: Start empty, build with each feature
+- **Discovery-first**: AI knows where to look, no searching
+- **Tool-agnostic**: Works with Claude, Gemini, Cursor, etc.
+
+## Knowledge Capture Flow
+
+```
+Build feature → Run /capture → AI analyzes changes → Creates knowledge docs → Updates INDEX.md
+```
+
+## Future Expansion
+
+As the system matures, we may add:
+- Workflows (standard processes)
+- Agents (specialized AI roles)
+- Skills (reusable capabilities)
+- Archetypes (project templates)
+
+Start simple, add complexity only when needed.
 ```
 
 ---
 
-## Slash Commands for Claude Code
+## Implementation Plan - Start Simple
 
-### `/capture` - Knowledge Capture
-```markdown
-Analyze recent changes and capture knowledge systematically:
-
-1. Run git diff to see what changed since last commit
-2. Read modified files to understand changes
-3. Extract key information:
-   - What was built/fixed
-   - Why (from commits/comments)
-   - How it works (from code)
-   - Patterns used
-   - Dependencies added
-4. Create/update knowledge files:
-   - Feature doc if new feature
-   - Component doc if component modified
-   - Pattern doc if new pattern used
-   - ADR if architectural decision
-5. Update .ai/INDEX.md with recent change
-6. Validate all references and links
-
-Optional: /capture --feature "name" to specify feature name
-```
-
-### `/workflow <name>` - Execute Workflow
-```markdown
-Execute the specified workflow from .ai/workflows/:
-
-1. Read .ai/workflows/[name].md
-2. Follow each step systematically
-3. Check off items as completed
-4. Auto-run /capture at the end if workflow succeeded
-
-Example: /workflow add-feature
-```
-
-### `/agent <type>` - Activate Agent
-```markdown
-Activate a specialized agent persona:
-
-1. Read .ai/agents/[type].md
-2. Adopt the role, focus, and checklist from that agent
-3. Reference the specified knowledge files
-4. Perform task with that agent's perspective
-
-Example: /agent code-reviewer
-```
-
-### `/ask <topic>` - Query Knowledge Base
-```markdown
-Query the knowledge base intelligently:
-
-1. Start with .ai/INDEX.md
-2. Use .ai/NAVIGATION.md to determine where to look
-3. Read relevant knowledge files
-4. Provide answer with file references
-
-Example: /ask "how does authentication work?"
-```
-
----
-
-## Integration with claude.md
-
-The `claude.md` file ties everything together:
-
-```markdown
-# Agentic Workflows Project
-
-## Project Overview
-[Description of the project]
-
-## For AI Assistants
-
-### Getting Started
-1. **Always start** by reading `.ai/INDEX.md`
-2. Learn navigation from `.ai/NAVIGATION.md`
-3. Check recent changes in `.ai/INDEX.md`
-4. Review architecture in `.ai/context/architecture.md`
-
-### Knowledge Base Structure
-- **Features**: `.ai/knowledge/features/` - Implemented features
-- **Components**: `.ai/knowledge/components/` - System components
-- **Patterns**: `.ai/knowledge/patterns/` - Coding patterns
-- **Workflows**: `.ai/workflows/` - Standard processes
-- **Agents**: `.ai/agents/` - Specialized behaviors
-- **Context**: `.ai/context/` - Architecture and decisions
-
-### Available Commands
-- `/capture` - Capture knowledge after changes
-- `/workflow <name>` - Execute standard workflow
-- `/agent <type>` - Activate specialized agent
-- `/ask <topic>` - Query knowledge base
-
-### Working with This Project
-
-**Before making changes:**
-1. Read relevant knowledge from `.ai/knowledge/`
-2. Check if a workflow exists in `.ai/workflows/`
-3. Review related patterns in `.ai/knowledge/patterns/`
-
-**After making changes:**
-1. Run `/capture` to update knowledge base
-2. Ensure tests pass
-3. Commit with clear messages
-
-### Coding Standards
-[Link to patterns and standards in .ai/knowledge/patterns/]
-
-## Tech Stack
-[Details from .ai/context/tech-stack.md]
-
-## Architecture
-See `.ai/context/architecture.md` for full details.
-```
-
----
-
-## Tool Agnostic Design
-
-### Why It Works with Any AI Tool
-
-1. **Standard Formats**: All knowledge in markdown with YAML frontmatter
-2. **Clear Instructions**: claude.md and INDEX.md tell ANY AI where to start
-3. **No Tool-Specific Features**: Core system doesn't rely on Claude-specific features
-4. **Prompt-Based**: Slash commands are just markdown files with instructions
-5. **File-Based**: No special APIs or integrations required
-
-### Using with Other Tools
-
-**Gemini/Cursor/Copilot:**
-1. Read `claude.md` → tells them to start with `.ai/INDEX.md`
-2. Follow same navigation patterns
-3. Use workflows as step-by-step guides (even without slash commands)
-4. Update knowledge files manually or with simple prompts
-
-**Claude Code:**
-1. Full integration with slash commands
-2. Automated workflows
-3. Session hooks for auto-loading context
-
----
-
-## Implementation Phases
-
-### Phase 1: Foundation (Start Here)
-**Goal:** Basic structure and core files
+### Phase 1: Foundation (Do This First) ✅
 
 **Create:**
-- Directory structure (`.ai/`, `.claude/`, `docs/`)
-- `claude.md` with project overview and AI instructions
-- `.ai/INDEX.md` - Master index
-- `.ai/NAVIGATION.md` - Navigation guide
-- `.ai/context/architecture.md` - Initial architecture doc
-- `.ai/context/tech-stack.md` - Technology choices
-- `.gitignore` - Ignore `.ai/sessions/`
+1. `claude.md` - AI entry point with clear instructions
+2. `.ai/INDEX.md` - Empty knowledge base dashboard
+3. `.ai/GUIDE.md` - Navigation guide
+4. `.ai/context/overview.md` - What this project is
+5. `.ai/context/architecture.md` - How it works
+6. `.claude/commands/capture.md` - Basic knowledge capture
+7. `.gitignore` - Ignore temp files
+8. `README.md` - Human-readable overview
 
-**Result:** AI can navigate empty structure, foundation for knowledge
+**Test:**
+- Create a dummy feature
+- Run `/capture`
+- Verify it creates knowledge file correctly
+- Verify INDEX.md updates
 
-### Phase 2: Workflows & Commands
-**Goal:** Implement knowledge capture system
+**Result:** Working foundation that's immediately useful
 
-**Create:**
-- `.ai/workflows/add-feature.md`
-- `.ai/workflows/fix-bug.md`
-- `.claude/commands/capture.md` - Knowledge capture command
-- `.claude/commands/workflow.md` - Workflow executor
-- First knowledge capture test (create dummy feature, run /capture)
+### Phase 2: First Real Usage (After Foundation)
 
-**Result:** Working knowledge capture workflow
+**Use it:**
+- Build your first real feature
+- Run `/capture` after each addition
+- Watch knowledge base grow organically
 
-### Phase 3: Agents & Skills
-**Goal:** Specialized AI behaviors
+**Refine:**
+- Adjust templates based on what works
+- Add patterns you discover
+- Update GUIDE.md with new navigation paths
 
-**Create:**
-- `.ai/agents/code-reviewer.md`
-- `.ai/agents/test-writer.md`
-- `.ai/skills/generate-tests.md`
-- `.ai/skills/update-changelog.md`
-- `.claude/commands/agent.md` - Agent activator
+**Result:** Proven system with real knowledge
 
-**Result:** AI can adopt specialized roles
+### Phase 3: Expansion (Only When Needed)
 
-### Phase 4: Archetypes & Patterns
-**Goal:** Reusable templates
+**Add only if useful:**
+- `.ai/workflows/` - If you repeat the same processes
+- `.ai/agents/` - If you want specialized AI behaviors
+- `.ai/skills/` - If you have reusable templates
+- More `/` commands - Only for common tasks
 
-**Create:**
-- `.ai/archetypes/rest-api/` - REST API template
-- `.ai/knowledge/patterns/error-handling.md`
-- `.ai/knowledge/patterns/dependency-injection.md`
-
-**Result:** Consistent project structure across features
-
-### Phase 5: Refinement
-**Goal:** Optimize based on usage
-
-**Actions:**
-- Add more workflows based on common tasks
-- Expand patterns library
-- Create more agent personas
-- Optimize INDEX.md for faster navigation
-- Add session summaries
-
-**Result:** Mature, efficient knowledge system
+**Result:** Mature system tailored to your needs
 
 ---
 
-## Success Metrics
+## Example: How It Works End-to-End
 
-### Quantitative
-- **Discovery Time**: Time to find relevant info (target: < 30 seconds)
-- **Search Reduction**: % reduction in full-repo searches (target: 70%+)
-- **Knowledge Coverage**: % of features documented (target: 100%)
-- **Index Hit Rate**: % of times AI finds answer in INDEX.md first (target: 60%+)
+### Scenario 1: First Session (Foundation)
 
-### Qualitative
-- AI provides context-aware answers without asking clarifying questions
-- New features follow established patterns automatically
-- Code reviews reference project-specific standards
-- Knowledge base grows organically with each feature
+```
+User: "Set up the knowledge management system"
 
----
+Claude:
+1. Reads claude.md (sees instructions to build .ai/ structure)
+2. Creates foundation files
+3. Commits and explains the system
 
-## Example: End-to-End Feature Addition
+User: "Build a user authentication feature"
 
-### Scenario: User asks "Add password reset feature"
-
-**AI's Process:**
-
-1. **Reads INDEX.md** → Knows this is an auth-related feature
-2. **Checks NAVIGATION.md** → "For auth features, check .ai/knowledge/features/authentication.md"
-3. **Reads authentication.md** → Understands current auth system (JWT-based)
-4. **Checks .ai/workflows/add-feature.md** → Follows standard workflow
-5. **Reviews .ai/knowledge/patterns/error-handling.md** → Uses project patterns
-6. **Implements feature** following established patterns
-7. **Writes tests** using `.ai/skills/generate-tests.md` template
-8. **Runs /capture** command:
-   - Analyzes git diff
-   - Creates `.ai/knowledge/features/password-reset.md`
-   - Updates `.ai/knowledge/features/authentication.md` (adds related link)
-   - Updates `.ai/INDEX.md` with recent change
-   - Creates `.ai/context/decisions/004-password-reset-token-strategy.md`
-9. **Commits** with knowledge base updated
-
-**Result:** Feature added with full knowledge capture, following project patterns, zero searches of full codebase.
-
----
-
-## Maintenance & Evolution
-
-### Weekly
-- Review Recent Changes in INDEX.md
-- Ensure all features from past week are captured
-- Clean up old sessions in `.ai/sessions/`
-
-### Monthly
-- Review and consolidate similar patterns
-- Update archetypes based on new patterns
-- Add new workflows for repeated tasks
-- Archive deprecated knowledge
-
-### Quarterly
-- Major INDEX.md reorganization if needed
-- Update NAVIGATION.md with new question patterns
-- Review success metrics
-- Prune unused agents/skills
-
----
-
-## Appendix: Sample File Contents
-
-### Sample .ai/INDEX.md (Populated)
-
-```markdown
-# AI Knowledge Base Index
-
-**Last Updated**: 2025-11-08
-**Project Phase**: Active Development
-**Features**: 5 implemented, 2 in progress
-**Components**: 8 core components
-**Patterns**: 12 documented patterns
-
-## Start Here - New Session Checklist
-
-### First Time?
-1. Read [claude.md](../claude.md) - Project overview
-2. Read [NAVIGATION.md](./NAVIGATION.md) - Where to find things
-3. Read [architecture.md](./context/architecture.md) - System design
-
-### Returning?
-1. Check [Recent Changes](#recent-changes) below
-2. Review active features in [knowledge/features/](./knowledge/features/)
-
-## Quick Stats
-- **Lines of Code**: ~5,200
-- **Test Coverage**: 87%
-- **Last Commit**: 2 hours ago
-- **Active Branch**: main
-
-## Recent Changes
-
-### 2025-11-08
-- ✅ **Added**: Password reset feature → [password-reset.md](./knowledge/features/password-reset.md)
-- ✅ **Updated**: Authentication system → [authentication.md](./knowledge/features/authentication.md)
-- 📝 **Decision**: Token-based reset strategy → [ADR-004](./context/decisions/004-password-reset-token-strategy.md)
-
-### 2025-11-07
-- 🔧 **Refactored**: Database connection pooling → [database-layer.md](./knowledge/components/database-layer.md)
-- ✅ **Added**: Error handling pattern → [error-handling.md](./knowledge/patterns/error-handling.md)
-
-### 2025-11-06
-- ✅ **Added**: User management API → [user-management.md](./knowledge/features/user-management.md)
-- 🧪 **Testing**: Improved integration test coverage to 85%
-
-## Knowledge Map
-
-### Features (5 implemented, 2 in progress)
-- ✅ [User Authentication](./knowledge/features/authentication.md) - JWT-based auth
-- ✅ [User Management](./knowledge/features/user-management.md) - CRUD operations
-- ✅ [Password Reset](./knowledge/features/password-reset.md) - Token-based reset
-- ✅ [Email Notifications](./knowledge/features/email-notifications.md) - SendGrid integration
-- ✅ [Audit Logging](./knowledge/features/audit-logging.md) - User action tracking
-- 🚧 [Two-Factor Auth](./knowledge/features/two-factor-auth.md) - In progress
-- 📋 [OAuth Integration](./knowledge/features/oauth.md) - Planned
-
-### Core Components (8)
-- [API Gateway](./knowledge/components/api-gateway.md) - Express-based routing
-- [Database Layer](./knowledge/components/database-layer.md) - PostgreSQL with TypeORM
-- [Auth Middleware](./knowledge/components/auth-middleware.md) - JWT validation
-- [Email Service](./knowledge/components/email-service.md) - SendGrid wrapper
-- [Logger](./knowledge/components/logger.md) - Winston-based logging
-- [Config Manager](./knowledge/components/config-manager.md) - Environment config
-- [Error Handler](./knowledge/components/error-handler.md) - Global error handling
-- [Validator](./knowledge/components/validator.md) - Input validation
-
-### Patterns (12)
-- [Error Handling](./knowledge/patterns/error-handling.md) - Standard error flows
-- [Dependency Injection](./knowledge/patterns/dependency-injection.md) - Constructor injection
-- [Repository Pattern](./knowledge/patterns/repository-pattern.md) - Data access abstraction
-- [Service Layer](./knowledge/patterns/service-layer.md) - Business logic organization
-- [Middleware Pattern](./knowledge/patterns/middleware-pattern.md) - Express middleware
-- [DTO Pattern](./knowledge/patterns/dto-pattern.md) - Data transfer objects
-- [Factory Pattern](./knowledge/patterns/factory-pattern.md) - Object creation
-- [Singleton Pattern](./knowledge/patterns/singleton-pattern.md) - Config, logger
-- [Observer Pattern](./knowledge/patterns/observer-pattern.md) - Event handling
-- [Strategy Pattern](./knowledge/patterns/strategy-pattern.md) - Auth strategies
-- [Decorator Pattern](./knowledge/patterns/decorator-pattern.md) - Route decorators
-- [Builder Pattern](./knowledge/patterns/builder-pattern.md) - Query building
-
-### Workflows (5 active)
-- [Add Feature](./workflows/add-feature.md) - Standard feature development
-- [Fix Bug](./workflows/fix-bug.md) - Bug resolution process
-- [Refactor](./workflows/refactor.md) - Code improvement workflow
-- [Add Test](./workflows/add-test.md) - Test creation process
-- [Release](./workflows/release.md) - Release preparation
-
-### Available Agents (4)
-- [Code Reviewer](./agents/code-reviewer.md) - Code quality focus
-- [Test Writer](./agents/test-writer.md) - Test generation specialist
-- [Docs Writer](./agents/docs-writer.md) - Documentation expert
-- [Security Auditor](./agents/security-auditor.md) - Security review
-
-### Skills (6)
-- [Generate Tests](./skills/generate-tests.md) - Test templates
-- [Update Changelog](./skills/update-changelog.md) - Changelog management
-- [Create Migration](./skills/create-migration.md) - DB migration patterns
-- [API Documentation](./skills/api-documentation.md) - OpenAPI/Swagger docs
-- [Error Messages](./skills/error-messages.md) - User-friendly error messages
-- [Validation Rules](./skills/validation-rules.md) - Input validation
-
-## Architecture Overview
-
-**Type**: REST API Service
-**Language**: TypeScript/Node.js
-**Framework**: Express
-**Database**: PostgreSQL
-**ORM**: TypeORM
-**Testing**: Jest
-**Documentation**: See [architecture.md](./context/architecture.md)
-
-## Key Decisions
-
-1. [Choice of Framework](./context/decisions/001-choice-of-framework.md) - Why Express
-2. [Database Selection](./context/decisions/002-database-selection.md) - Why PostgreSQL
-3. [JWT vs Sessions](./context/decisions/003-jwt-vs-sessions.md) - Auth strategy
-4. [Password Reset Tokens](./context/decisions/004-password-reset-token-strategy.md) - Token handling
-
-## Project Status
-
-### Current Focus
-- Implementing Two-Factor Authentication
-- Improving test coverage to 90%
-- Adding OAuth support
-
-### Upcoming
-- API rate limiting
-- Redis caching layer
-- GraphQL endpoint
-
-### Tech Debt
-- Refactor user controller (too large)
-- Add integration tests for email service
-- Update dependencies (3 minor, 1 major)
+Claude:
+1. Reads claude.md → .ai/INDEX.md (empty, no auth knowledge)
+2. Builds authentication feature
+3. User runs /capture
+4. Claude creates .ai/knowledge/features/authentication.md
+5. Updates INDEX.md with new entry
 ```
 
+### Scenario 2: Later Session (Knowledge Exists)
+
+```
+User: "Add password reset"
+
+Claude:
+1. Reads claude.md → .ai/INDEX.md
+2. Sees authentication feature listed
+3. Reads .ai/knowledge/features/authentication.md
+4. Understands existing auth system (JWT, token structure, etc.)
+5. Builds password reset using existing patterns
+6. User runs /capture
+7. Creates password-reset.md, links to authentication.md
+8. Updates INDEX.md
+```
+
+### Scenario 3: Using with Different AI (Gemini)
+
+```
+User in Gemini: "How does authentication work here?"
+
+[Pastes contents of claude.md to Gemini]
+
+Gemini:
+1. Sees instruction to read .ai/INDEX.md
+2. Reads INDEX.md, finds authentication.md link
+3. Reads authentication.md
+4. Answers with full context, no search needed
+```
+
+**The system is tool-agnostic because it's just markdown files with clear instructions.**
+
 ---
 
-## Next Steps for Implementation
+## Why This Is Simpler Than Before
 
-Once you approve this plan, I will:
+**Removed from initial version:**
+- ❌ Workflows (add later if needed)
+- ❌ Agents (add later if needed)
+- ❌ Skills (add later if needed)
+- ❌ Personas (add later if needed)
+- ❌ Archetypes (add later if needed)
+- ❌ Session tracking (probably don't need)
+- ❌ Complex metadata (keep it simple)
 
-1. **Create the foundation** (Phase 1):
-   - All directory structure
-   - `claude.md` with full AI instructions
-   - `.ai/INDEX.md` and `.ai/NAVIGATION.md`
-   - Initial context files
+**Keeping:**
+- ✅ claude.md as entry point
+- ✅ Simple INDEX.md dashboard
+- ✅ GUIDE.md for navigation
+- ✅ knowledge/ for features/components/patterns
+- ✅ context/ for architecture/decisions
+- ✅ /capture command for easy documentation
 
-2. **Implement `/capture` command** (Phase 2):
-   - `.claude/commands/capture.md` with full workflow
-   - Test it by creating a dummy feature
-   - Validate it correctly generates knowledge files
-
-3. **Add remaining workflows and commands**:
-   - `/workflow`, `/agent`, `/ask` commands
-   - Core workflow files
-
-4. **Create initial agents and skills**:
-   - Code reviewer, test writer agents
-   - Test generation, changelog update skills
-
-5. **Documentation**:
-   - Add usage examples to README.md
-   - Create getting-started guide
+**Philosophy:** Start with the minimum that's useful. Add complexity only when you feel the need.
 
 ---
 
-## Questions for You
+## Success Looks Like
 
-Before implementing, please confirm:
+### Week 1
+- Foundation files created
+- First `/capture` works
+- 1-2 features documented
 
-1. **Directory name**: Is `.ai/` good, or prefer `.agentic/`, `.knowledge/`, or something else?
-2. **Session tracking**: Should we track session history in `.ai/sessions/` or skip it?
-3. **Archetypes**: What type of projects will you build? (REST APIs, CLIs, libraries, etc.)
-4. **Workflows**: What are your most common tasks? (beyond add-feature, fix-bug)
-5. **Integration**: Any specific tools besides Claude Code you want to ensure compatibility with?
-6. **Tech stack**: What languages/frameworks will you primarily use?
+### Month 1
+- 10+ features documented
+- AI consistently finds info in .ai/ without searching
+- You naturally run `/capture` after each feature
 
-This plan creates a self-improving knowledge system that gets smarter with every feature you build. The key innovation is the `/capture` command that makes knowledge accumulation automatic rather than manual.
+### Month 3
+- Comprehensive knowledge base
+- New developers (or AIs) get up to speed in minutes
+- Patterns library helps maintain consistency
+- INDEX.md is your project dashboard
 
-Ready to proceed?
+---
+
+## Ready to Build?
+
+Once you approve, I'll create:
+
+1. **claude.md** - Complete entry point
+2. **.ai/INDEX.md** - Dashboard (starts empty)
+3. **.ai/GUIDE.md** - Navigation guide
+4. **.ai/context/overview.md** - Project overview
+5. **.ai/context/architecture.md** - Architecture explanation
+6. **.claude/commands/capture.md** - Knowledge capture command
+7. **README.md** - Human-readable docs
+8. **.gitignore** - Ignore temp files
+
+Then we'll test `/capture` with a dummy feature to verify it works.
+
+**This is the foundation. Everything else builds on it incrementally.**
