@@ -7,18 +7,24 @@
 ## One-Time Setup Per Project (5 minutes)
 
 ```bash
+TEMPLATE=/Users/davidmorgan/Documents/Repositories/agentic-workflows
+
 # 1. Copy structure
 cd your-project
-cp -r ~/agentic-workflows/.ai .
-cp -r ~/agentic-workflows/.claude .
-cp ~/agentic-workflows/claude.md .
+cp -r $TEMPLATE/.ai .
+cp -r $TEMPLATE/.claude .
+cp $TEMPLATE/claude.md .
 
-# 2. Quick customize (edit 3 files)
+# 2. Symlink preferences (single source of truth)
+rm -rf .ai/preferences
+ln -s $TEMPLATE/.ai/preferences .ai/preferences
+
+# 3. Quick customize (edit 3 files)
 # Edit claude.md: Project name, type, tech stack
 # Edit .ai/context/overview.md: Project description
 # Edit .ai/INDEX.md: Set date, clear greeter example
 
-# 3. Commit
+# 4. Commit
 git add .ai/ .claude/ claude.md .gitignore
 git commit -m "Add AI knowledge management system"
 ```

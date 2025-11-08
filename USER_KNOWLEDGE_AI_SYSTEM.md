@@ -7,7 +7,19 @@
 ## Quick Integration (When User Says: "Add AI knowledge system")
 
 ```bash
-cp -r ~/Documents/Repositories/agentic-workflows/{.ai,.claude,claude.md} .
+TEMPLATE=/Users/davidmorgan/Documents/Repositories/agentic-workflows
+
+# Copy structure (not preferences)
+cp -r $TEMPLATE/.ai .
+rm -rf .ai/preferences  # Remove copied preferences
+
+# Symlink preferences to template (single source of truth)
+ln -s $TEMPLATE/.ai/preferences .ai/preferences
+
+# Copy commands
+cp -r $TEMPLATE/.claude .
+cp $TEMPLATE/claude.md .
+
 # Edit 3 files: claude.md (L1,3,5), .ai/context/overview.md (L9-11), .ai/INDEX.md (L3-5)
 git add .ai .claude claude.md && git commit -m "Add AI knowledge system"
 ```
