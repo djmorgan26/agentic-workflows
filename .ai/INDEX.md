@@ -2,13 +2,14 @@
 
 **Last Updated**: 2025-11-08
 **Project Phase**: Foundation
-**Knowledge Items**: 0 features • 0 components • 0 patterns
+**Knowledge Items**: 1 feature • 0 components • 0 patterns
 
 ---
 
 ## 🆕 Recent Changes
 
 ### 2025-11-08
+- ✅ **Added**: Greeter feature (test case for `/capture` workflow) → [greeter.md](./knowledge/features/greeter.md)
 - 🎉 **Initialized** AI knowledge management system
 - 📁 **Created** foundation structure (claude.md, INDEX.md, GUIDE.md)
 - 📝 **Established** context documentation (overview.md, architecture.md)
@@ -26,7 +27,7 @@
 - [Decisions](./context/decisions/) - Architecture Decision Records (ADRs) - *Empty for now*
 
 ### Knowledge Base (Grows over time)
-- [Features](./knowledge/features/) - **0 documented** - Feature implementations
+- [Features](./knowledge/features/) - **1 documented** - Feature implementations
 - [Components](./knowledge/components/) - **0 documented** - System components
 - [Patterns](./knowledge/patterns/) - **0 documented** - Coding patterns
 
@@ -34,8 +35,8 @@
 
 ## 📊 Project Stats
 
-- **Total knowledge files**: 2 (overview, architecture)
-- **Features documented**: 0
+- **Total knowledge files**: 3 (overview, architecture, greeter)
+- **Features documented**: 1
 - **Components documented**: 0
 - **Patterns captured**: 0
 - **Decisions recorded**: 0
@@ -59,8 +60,8 @@
 
 ## 🗺️ Knowledge Map
 
-### Features (0)
-*No features documented yet. Run `/capture` after building your first feature.*
+### Features (1)
+- ✅ [Greeter](./knowledge/features/greeter.md) - Simple greeting and farewell functionality (test case)
 
 ### Components (0)
 *No components documented yet. Components will be captured as you build.*
