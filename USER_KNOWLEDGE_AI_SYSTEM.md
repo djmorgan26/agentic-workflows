@@ -1,66 +1,129 @@
-# AI Knowledge System Integration - User Knowledge for Claude
+# AI Knowledge System - User Memory (Token-Optimized)
 
-**Purpose**: Quick reference for integrating AI knowledge management system into any project.
+**Template**: `/Users/davidmorgan/Documents/Repositories/agentic-workflows`
 
 ---
 
-## When User Says: "Add the AI knowledge system to this project"
-
-### Execute This:
+## Quick Integration (When User Says: "Add AI knowledge system")
 
 ```bash
-# 1. Copy from template (adjust path as needed)
-cp -r ~/agentic-workflows/.ai .
-cp -r ~/agentic-workflows/.claude .
-cp ~/agentic-workflows/claude.md .
-
-# 2. Customize these 3 files:
+cp -r ~/Documents/Repositories/agentic-workflows/{.ai,.claude,claude.md} .
+# Edit 3 files: claude.md (L1,3,5), .ai/context/overview.md (L9-11), .ai/INDEX.md (L3-5)
+git add .ai .claude claude.md && git commit -m "Add AI knowledge system"
 ```
 
-**claude.md** - Change project name, type, tech stack (lines 1, 3, 5)
-**.ai/context/overview.md** - Update project description (lines 9-11, 149-163)
-**.ai/INDEX.md** - Set date, update status, clear examples (lines 3-5, 11-16, 63-64)
+---
 
+## User Preferences (Always Follow)
+
+### Git Workflow
+- ✅ **Commit messages**: CONCISE. One line summarizing what changed.
+- ❌ **Never push**: User handles `git push` themselves. Only commit.
+- ✅ **Commit often**: After each logical change, commit with clear message.
+
+**Example commit messages:**
 ```bash
-# 3. Commit
-git add .ai/ .claude/ claude.md
-git commit -m "Add AI knowledge management system"
+git commit -m "Add user authentication"
+git commit -m "Fix login validation bug"
+git commit -m "Update error handling pattern"
+git commit -m "Document payment feature"
+```
+
+**Not this:**
+```bash
+# Too verbose - user wants concise!
+git commit -m "$(cat <<'EOF'
+Add comprehensive user authentication system
+
+Implemented JWT-based authentication with:
+- Login endpoint with email/password validation
+- Token generation and verification
+- Refresh token support
+...
+EOF
+)"
 ```
 
 ---
 
-## Daily Usage Pattern
+## Token-Saving Rules
 
-**User builds feature** → **Commits** → **Says "run /capture"** → **You document it**
+### Rule 1: Read Order (Every Session Start)
+```
+1. claude.md (orientation) → 2. .ai/INDEX.md (recent changes) → 3. Done
+```
+**Don't read**: Full files unless user asks specific questions. INDEX.md has links.
+
+### Rule 2: Use Subagents (Save Main Context)
+```
+If > 3 files changed OR > 200 lines: Launch Task subagent
+Else: Handle inline
+```
+
+### Rule 3: /capture Command
+```
+User says: "run /capture" or "document this"
+→ Quick check: git log -1 --oneline
+→ Launch Task subagent with: "Analyze git changes, create .ai/knowledge/ docs, update INDEX.md"
+→ Report subagent summary to user
+```
+**Never read all files in main session - use subagent!**
 
 ---
 
-## System Structure
+## Structure (Reference Only)
 
 ```
-.ai/
-├── INDEX.md              ← Read FIRST every session
-├── preferences/          ← User's coding standards (cross-project, don't modify)
-├── knowledge/            ← THIS project's features (grows with /capture)
-└── context/              ← Project architecture & decisions
-
-.claude/commands/
-└── capture.md            ← Your /capture workflow instructions
+.ai/INDEX.md         ← Start here (has everything you need)
+.ai/preferences/     ← User's standards (read when building, don't modify)
+.ai/knowledge/       ← Project-specific (capture creates these)
+.claude/commands/    ← Slash command definitions
 ```
 
 ---
 
-## Key Concepts
+## Decision Tree
 
-**Three-tier knowledge:**
-1. **Preferences** (`.ai/preferences/`) - User's standards for ALL projects
-2. **Patterns** (`.ai/knowledge/patterns/`) - How THIS project implements them
-3. **Features** (`.ai/knowledge/features/`) - Specific functionality HERE
+```
+User request type → Action
 
-**Important:**
-- Preferences are **referenced, not modified** in each project
-- Each project's knowledge stays **isolated**
-- Use `/capture` after commits to **auto-document**
+"Add AI system"     → Copy template, customize 3 files, commit (don't push)
+"Document this"     → Run /capture (via subagent), commit knowledge (don't push)
+"How does X work?"  → Read .ai/INDEX.md → Link to knowledge file
+"Build feature"     → Check .ai/preferences/ → Build → Commit → Remind to /capture
+New session         → Read claude.md → Read INDEX.md only
+```
+
+---
+
+## Critical: Context Budget
+
+**Main session reads (max):**
+- claude.md (~200 tokens)
+- .ai/INDEX.md (~500 tokens)
+- Specific knowledge file if needed (~1000 tokens)
+
+**Use subagents for:**
+- /capture (any size change)
+- Reading > 3 files
+- Analyzing large diffs
+- Generating documentation
+
+**Don't read in main session:**
+- All knowledge files (use INDEX.md links)
+- All preferences (only when needed)
+- Full git diffs (let subagent handle)
+
+---
+
+## Common Pitfalls (Don't Waste Tokens)
+
+❌ Reading all .ai/knowledge/ files → Use INDEX.md instead
+❌ Manual /capture (reading files yourself) → Use Task subagent
+❌ Re-explaining preferences → Just reference the file path
+❌ Full-repo searches → Check .ai/ first
+❌ Verbose commit messages → Keep concise (one line)
+❌ Auto-pushing to git → Never push, user handles it
 
 ---
 
@@ -90,42 +153,32 @@ When user says "run /capture":
 
 ---
 
-## Template Location
+## Slash Commands
 
-**Default**: `~/agentic-workflows` (or wherever user keeps template)
-
-**To update preferences** for future projects:
-- Edit in template repo
-- New projects get updated version when integrated
+`/capture` - If doesn't work, say: "Follow .claude/commands/capture.md instructions"
 
 ---
 
 ## Integration Checklist
 
-When integrating, verify:
-- [ ] `.ai/` directory exists with all subdirectories
-- [ ] `.ai/preferences/` has 4 files (coding, errors, testing, docs)
-- [ ] `claude.md` customized with project details
-- [ ] `.ai/INDEX.md` shows correct project name and date
-- [ ] `.claude/commands/capture.md` exists
-- [ ] All links in claude.md work (test by reading referenced files)
+When integrating into existing project:
+- [ ] Copy template files
+- [ ] Customize 3 key files (claude.md, overview.md, INDEX.md)
+- [ ] Commit with concise message: "Add AI knowledge system"
+- [ ] **Don't push** - let user handle it
+- [ ] Verify .ai/ structure exists
+- [ ] Ready to use /capture
 
 ---
 
-## Quick Fixes
+## Key Insight
 
-**Broken links**: Use `./.ai/preferences/...` (relative to project root)
-**Too much to document**: Build incrementally with /capture, don't document everything upfront
-**Preferences mismatch**: Document deviations in `.ai/knowledge/patterns/`, keep preferences as-is
+**This system EXISTS to save tokens.** Always prefer:
+1. INDEX.md over exploring
+2. Subagents over main session work
+3. Links over reading full files
+4. References over re-explanations
+5. Concise commits over verbose ones
+6. User controls git push
 
----
-
-## Remember
-
-**Every session:**
-1. Read `claude.md`
-2. Read `.ai/INDEX.md`
-3. Check `.ai/preferences/` before coding
-4. Use `/capture` after commits
-
-This is the user's **institutional memory system** - respect it and keep it current!
+**User's goal**: Build institutional memory that REDUCES context needs over time.
