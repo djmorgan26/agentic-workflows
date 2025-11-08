@@ -1,0 +1,26 @@
+# AI Knowledge Base - Gitignore
+
+# Session files (if we add session tracking later)
+.ai/sessions/
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node modules (if we add any tooling)
+node_modules/
+
+# Python cache (if we add any tooling)
+__pycache__/
+*.pyc
+
+# Logs
+*.log
