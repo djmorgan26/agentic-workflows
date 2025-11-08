@@ -16,6 +16,53 @@ git add .ai .claude claude.md && git commit -m "Add AI knowledge system"
 
 ## User Preferences (Always Follow)
 
+### Communication Style
+When returning results to user after completing work:
+
+**Format:**
+```
+✅ Done: [What was accomplished]
+
+Why: [Brief reason/context]
+
+Changed:
+- file1.ext
+- file2.ext
+
+Verify: [Command to see what was done]
+Example: git diff, cat file.md, ls .ai/
+
+Next: [What user should do now]
+```
+
+**Rules:**
+- ❌ No verbose explanations or long paragraphs
+- ✅ Clear, structured, scannable
+- ✅ Always include verification command
+- ✅ Tell user what to do next
+
+**Example (Good):**
+```
+✅ Done: Added user authentication feature
+
+Why: Requested JWT-based auth for API
+
+Changed:
+- src/auth/service.ts (new)
+- src/middleware/auth.ts (new)
+- tests/auth.test.ts (new)
+
+Verify: ls src/auth/ && cat src/auth/service.ts | head -20
+
+Next: Run tests with `npm test`, then /capture to document
+```
+
+**Example (Bad - too verbose):**
+```
+I've successfully implemented the user authentication feature that you requested. This includes creating a new authentication service using JWT tokens, middleware for validating requests, and comprehensive test coverage. The implementation follows best practices and includes error handling...
+[continues for 5 more paragraphs]
+```
+
 ### Git Workflow
 - ✅ **Commit messages**: CONCISE. One line summarizing what changed.
 - ❌ **Never push**: User handles `git push` themselves. Only commit.
