@@ -68,12 +68,23 @@ git commit -m "Add AI knowledge management system"
 
 When user says "run /capture":
 
-1. Run `git log -1 --stat` and `git diff HEAD`
-2. Analyze what changed (feature/component/pattern/decision)
-3. Create `.ai/knowledge/features/[name].md` with full documentation
-4. Update `.ai/INDEX.md` Recent Changes section
-5. Increment knowledge counts
-6. Add to Knowledge Map
+**You launch a Task tool subagent** that:
+1. Runs git commands to analyze changes
+2. Reads changed files
+3. Determines what was built (feature/component/pattern/decision)
+4. Creates/updates `.ai/knowledge/` files with full documentation
+5. Updates `.ai/INDEX.md` Recent Changes section
+6. Returns concise summary to main session
+
+**Main session just reports results to user.**
+
+**Why subagent?**
+- Keeps main context clean
+- Handles large changes efficiently
+- Token efficient (heavy lifting in subagent context)
+- Scales from small to large changes
+
+**Rule**: If git diff > 200 lines or > 3 files, definitely use subagent. For tiny changes, can handle inline.
 
 **Don't skip /capture** - it's how knowledge builds up!
 
