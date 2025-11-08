@@ -48,12 +48,24 @@
 Read claude.md → Read INDEX.md → Read GUIDE.md → Find specific knowledge → Build → Capture
 ```
 
+### Personal Preferences (Cross-Project Standards)
+
+**Before coding**, review `.ai/preferences/` for general standards:
+
+- **[Coding Standards](./.ai/preferences/coding-standards.md)** - Naming, organization, code quality principles
+- **[Error Handling](./.ai/preferences/error-handling.md)** - Error patterns, logging strategies
+- **[Testing Strategy](./.ai/preferences/testing-strategy.md)** - Test philosophy, coverage targets
+- **[Documentation Style](./.ai/preferences/documentation-style.md)** - How to document code
+
+**These preferences apply to all projects** - follow them unless project-specific needs dictate otherwise. Document project-specific implementations in `.ai/knowledge/patterns/`.
+
 ### Before Making Changes
 
 1. **Check `.ai/INDEX.md`** for recent updates that might affect your work
-2. **Look for related features** in `.ai/knowledge/features/` to understand existing patterns
-3. **Review relevant patterns** in `.ai/knowledge/patterns/` to maintain consistency
-4. **Check architecture** in `.ai/context/` if making structural changes
+2. **Review `.ai/preferences/`** for applicable coding standards
+3. **Look for related features** in `.ai/knowledge/features/` to understand existing patterns
+4. **Review relevant patterns** in `.ai/knowledge/patterns/` to maintain consistency
+5. **Check architecture** in `.ai/context/` if making structural changes
 
 ### After Making Changes
 
@@ -64,15 +76,17 @@ Read claude.md → Read INDEX.md → Read GUIDE.md → Find specific knowledge �
 ### Available Commands
 
 - **`/capture`** - Automatically document recent work (run after building features)
+- **`/init`** - Initialize AI knowledge system in a new project (one-time setup)
 
 ### Navigation Quick Reference
 
 | Need to know... | Look in... |
 |----------------|------------|
 | What's new? | `.ai/INDEX.md` → Recent Changes |
+| My coding preferences? | `.ai/preferences/` (cross-project standards) |
 | How does X work? | `.ai/knowledge/features/[feature].md` |
 | Why was Y decided? | `.ai/context/decisions/` |
-| What patterns to use? | `.ai/knowledge/patterns/` |
+| What patterns to use? | `.ai/knowledge/patterns/` (project-specific) |
 | Project architecture? | `.ai/context/architecture.md` |
 | What components exist? | `.ai/knowledge/components/` |
 

@@ -24,7 +24,15 @@
 ### Project Context
 - [Overview](./context/overview.md) - What this project does and why
 - [Architecture](./context/architecture.md) - How the system is structured
-- [Decisions](./context/decisions/) - Architecture Decision Records (ADRs) - *Empty for now*
+- [Decisions](./context/decisions/) - Architecture Decision Records (ADRs) - **1 recorded**
+
+### 🎨 Personal Preferences (Cross-Project Standards)
+*These apply to all your projects and are referenced, not modified.*
+
+- [Coding Standards](./preferences/coding-standards.md) - Naming, organization, quality principles
+- [Error Handling](./preferences/error-handling.md) - Error patterns, logging, retry strategies
+- [Testing Strategy](./preferences/testing-strategy.md) - Test philosophy, coverage, patterns
+- [Documentation Style](./preferences/documentation-style.md) - Docs philosophy, formats, examples
 
 ### Knowledge Base (Grows over time)
 - [Features](./knowledge/features/) - **1 documented** - Feature implementations
@@ -35,11 +43,12 @@
 
 ## 📊 Project Stats
 
-- **Total knowledge files**: 3 (overview, architecture, greeter)
+- **Total knowledge files**: 8 (overview, architecture, greeter, 4 preferences, 1 decision)
 - **Features documented**: 1
 - **Components documented**: 0
 - **Patterns captured**: 0
-- **Decisions recorded**: 0
+- **Decisions recorded**: 1
+- **Personal preferences**: 4 (coding, errors, testing, docs)
 - **Test coverage**: N/A (no code yet)
 - **Last commit**: Initial foundation
 
@@ -69,8 +78,8 @@
 ### Patterns (0)
 *No patterns documented yet. Patterns will emerge as you build features.*
 
-### Decisions (0)
-*No architectural decisions recorded yet. Major decisions will be captured as ADRs.*
+### Decisions (1)
+- ✅ [001: Personal Preferences System](./context/decisions/001-personal-preferences-system.md) - Cross-project standards approach
 
 ---
 
